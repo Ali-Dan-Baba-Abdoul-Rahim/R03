@@ -26,3 +26,11 @@ float note
 ##Fichiers
 main.c : Code source principal du programme
 etudiants.txt : Fichier de sauvegarde/chargement des étudiants
+
+##Compilation
+Utilisez un compilateur C
+
+##Remarques
+1.Le programme supporte jusqu'à 100 étudiants maximum.
+2.Les noms et prénoms ne doivent pas contenir d'espaces (utilisez un mot par champ).
+3.Les données sauvegardées dans le fichier texte sont réutilisables même après fermeture du programme.
