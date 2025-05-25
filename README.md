@@ -2,42 +2,27 @@
 
 **Projet Semaine 3 — Structures + Fichiers en C**
 
-## Description
+##Description
+Ce programme en langage C permet de gérer une base de données simple d'étudiants. Il propose des fonctionnalités interactives via un menu pour saisir, afficher, trier, filtrer, rechercher, sauvegarder et charger des étudiants.
 
-Ce projet est une application en ligne de commande permettant de gérer une liste d'étudiants. Il utilise des **structures**, **tableaux**, et la **gestion de fichiers texte** pour stocker les données de manière persistante.
+##Fonctionnalités
 
----
+1. Saisie : Ajouter un nouvel étudiant avec son ID, nom, prénom et note.
+2. Affichage : Voir la liste complète des étudiants.
+3. Filtrage : Afficher uniquement les étudiants ayant une note supérieure ou égale à un seuil donné.
+4. Tri : Classer les étudiants par note (ordre décroissant).
+5. Recherche : Trouver un étudiant par son nom.
+6. Sauvegarde : Enregistrer la liste dans un fichier etudiants.txt.
+7. Chargement : Recharger les étudiants depuis le fichier etudiants.txt.
+   
+##Structure des Données
 
-## Fonctionnalités
+Chaque étudiant est représenté par une structure contenant :
+int id
+char nom[50]
+char prenom[50]
+float note
 
-- Ajouter un étudiant (ID, nom, prénom, moyenne)
-- Afficher tous les étudiants
-- Trier les étudiants par moyenne (ordre décroissant)
-- Sauvegarder les étudiants dans un fichier texte (`etudiants.txt`)
-- Charger des étudiants depuis un fichier
-- Rechercher un étudiant par son nom
-
----
-
-## Objectifs pédagogiques
-
-- Manipuler des **structures** en langage C
-- Utiliser des **tableaux de structures**
-- Lire et écrire des **fichiers texte**
-- Implémenter un menu interactif en **ligne de commande**
-- Appliquer des **algorithmes de tri** et de recherche
-
----
-
-## Compilation et exécution
-
-### Prérequis
-
-- Un compilateur C (comme `gcc`)
-- Terminal (Linux, Mac ou Windows avec MinGW)
-
-### Commandes
-
-```bash
-gcc student_manager.c -o student_manager
-./student_manager
+##Fichiers
+main.c : Code source principal du programme
+etudiants.txt : Fichier de sauvegarde/chargement des étudiants
