@@ -1,160 +1,228 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h>              // Bibliothèque standard pour les entrées/sorties (printf, scanf)
+#include <stdlib.h>             // Bibliothèque standard pour exit() et fonctions diverses
+#include <string.h>             // Bibliothèque pour manipuler les chaînes de caractères
 
-#define MAX_ETUDIANTS 100  // Nombre maximum d'étudiants que l'on peut gérer
+#define TAILLE_NOM 50           // Taille maximale pour les noms et prénoms
+#define MAX_ETUDIANTS 100       // Nombre maximum d'étudiants dans le tableau
 
-// Définition de la structure Etudiant
-typedef struct {
-    int id;
-    char nom[50];
-    char prenom[50];
-    float moyenne;
+// ============================
+// 1. MODÉLISATION ET SAISIE
+// ============================
+
+typedef struct {                // Déclaration d'une structure pour représenter un étudiant
+    int id;                     // Identifiant unique
+    char nom[TAILLE_NOM];       // Nom de l'étudiant
+    char prenom[TAILLE_NOM];    // Prénom de l'étudiant
+    float note;                 // Note de l'étudiant
 } Etudiant;
 
-// Déclaration du tableau principal et du compteur
-Etudiant liste[MAX_ETUDIANTS];
-int nbEtudiants = 0;
+Etudiant liste[MAX_ETUDIANTS];  // Tableau contenant tous les étudiants
+int nb_etudiants = 0;           // Nombre d'étudiants actuellement saisis
 
-// Fonction pour ajouter un étudiant
-void ajouterEtudiant() {
-    if (nbEtudiants >= MAX_ETUDIANTS) {
-        printf("Limite atteinte.\n");
+void saisirEtudiant(Etudiant *e) {           // Fonction de saisie d’un étudiant (par pointeur)
+    printf("Saisir l'ID : ");                // Invite pour l'identifiant
+    scanf("%d", &e->id);                     // Lecture de l'identifiant
+
+    printf("Saisir le nom : ");              // Invite pour le nom
+    scanf("%s", e->nom);                     // Lecture du nom (chaîne)
+
+    printf("Saisir le prénom : ");           // Invite pour le prénom
+    scanf("%s", e->prenom);                  // Lecture du prénom (chaîne)
+
+    printf("Saisir la note : ");             // Invite pour la note
+    scanf("%f", &e->note);                   // Lecture de la note (nombre flottant)
+}
+
+void saisie() {                              // Fonction d’ajout d’un étudiant à la liste
+    if (nb_etudiants >= MAX_ETUDIANTS) {     // Vérifie si on a atteint la limite
+        printf("Nombre maximal d'étudiants atteint.\n"); // Affiche un message d'erreur
+        return;                              // Sort de la fonction
+    }
+
+    printf("\n--- Saisie d'un étudiant ---\n");          // Message de début
+    saisirEtudiant(&liste[nb_etudiants]);    // Appel de la fonction pour remplir un étudiant
+    nb_etudiants++;                          // Incrémente le nombre total d’étudiants
+}
+
+// ============================
+// 2. AFFICHAGE ET FILTRAGE
+// ============================
+
+void afficher_etudiants() {                  // Fonction pour afficher tous les étudiants
+    if (nb_etudiants == 0) {                 // Vérifie s’il y a des étudiants
+        printf("Aucun étudiant à afficher.\n");  // Message si vide
+        return;                              // Fin de fonction
+    }
+
+    printf("\n--- Liste des étudiants ---\n");   // Titre de la liste
+    for (int i = 0; i < nb_etudiants; i++) {     // Parcours de la liste
+        printf("%d. ID: %d, %s %s, Note: %.2f\n", // Affiche les données de l'étudiant
+               i + 1,
+               liste[i].id,
+               liste[i].nom,
+               liste[i].prenom,
+               liste[i].note);
+    }
+}
+
+void affichage() {                           // Fonction wrapper pour affichage
+    afficher_etudiants();                    // Appel de la fonction principale
+}
+
+void filtrage() {                            // Fonction pour filtrer selon la note
+    if (nb_etudiants == 0) {                 // Vérifie s’il y a des étudiants
+        printf("Aucun étudiant à filtrer.\n");
         return;
     }
 
-    printf("ID: ");
-    scanf("%d", &liste[nbEtudiants].id);
+    float seuil;                             // Seuil de note à filtrer
+    printf("Afficher les étudiants avec une note >= à : ");
+    scanf("%f", &seuil);                     // Lecture du seuil
 
-    printf("Nom: ");
-    scanf("%s", liste[nbEtudiants].nom);
+    printf("\n--- Étudiants avec note >= %.2f ---\n", seuil); // Titre
+    int trouve = 0;                          // Variable pour détecter s’il y a des résultats
 
-    printf("Prénom: ");
-    scanf("%s", liste[nbEtudiants].prenom);
-
-    printf("Moyenne: ");
-    scanf("%f", &liste[nbEtudiants].moyenne);
-
-    nbEtudiants++;  // Incrémentation du nombre d'étudiants
-}
-
-// Fonction pour afficher tous les étudiants
-void afficherEtudiants() {
-    if (nbEtudiants == 0) {
-        printf("Aucun étudiant enregistré.\n");
-        return;
+    for (int i = 0; i < nb_etudiants; i++) { // Parcours de tous les étudiants
+        if (liste[i].note >= seuil) {       // Si la note est supérieure ou égale
+            printf("%d. ID: %d, %s %s, Note: %.2f\n",
+                   i + 1,
+                   liste[i].id,
+                   liste[i].nom,
+                   liste[i].prenom,
+                   liste[i].note);
+            trouve = 1;                      // On a trouvé au moins un résultat
+        }
     }
 
-    printf("\nListe des étudiants :\n");
-    for (int i = 0; i < nbEtudiants; i++) {
-        printf("%d - %s %s - %.2f\n", 
-               liste[i].id, liste[i].nom, 
-               liste[i].prenom, liste[i].moyenne);
+    if (!trouve) {                           // Aucun étudiant filtré
+        printf("Aucun étudiant trouvé.\n");
     }
 }
 
-// Fonction pour trier les étudiants par moyenne (ordre décroissant)
-void trierEtudiantsParMoyenne() {
-    for (int i = 0; i < nbEtudiants - 1; i++) {
-        for (int j = i + 1; j < nbEtudiants; j++) {
-            if (liste[i].moyenne < liste[j].moyenne) {
-                // Échange des structures
-                Etudiant temp = liste[i];
+// ============================
+// 3. TRI ET RECHERCHE
+// ============================
+
+void tri() {                                 // Fonction de tri décroissant des notes
+    for (int i = 0; i < nb_etudiants - 1; i++) {
+        for (int j = i + 1; j < nb_etudiants; j++) {
+            if (liste[i].note < liste[j].note) { // Si l’ordre est incorrect
+                Etudiant temp = liste[i];        // Échange
                 liste[i] = liste[j];
                 liste[j] = temp;
             }
         }
     }
-    printf("Tri effectué.\n");
+
+    printf("Tri effectué par ordre décroissant des notes.\n");
 }
 
-// Fonction pour sauvegarder la liste des étudiants dans un fichier texte
-void sauvegarderDansFichier(const char* nomFichier) {
-    FILE* f = fopen(nomFichier, "w");  // Ouvre en écriture
-    if (!f) {
-        printf("Erreur d'ouverture du fichier.\n");
+void recherche() {                           // Recherche d’un étudiant par nom
+    if (nb_etudiants == 0) {
+        printf("Aucun étudiant enregistré.\n");
         return;
     }
 
-    for (int i = 0; i < nbEtudiants; i++) {
-        // Écrit les informations de chaque étudiant dans le fichier
-        fprintf(f, "%d %s %s %.2f\n", 
-                liste[i].id, liste[i].nom, 
-                liste[i].prenom, liste[i].moyenne);
-    }
-    fclose(f);  // Ferme le fichier
-    printf("Sauvegarde réussie dans %s.\n", nomFichier);
-}
+    char nom_cherche[TAILLE_NOM];            // Nom à chercher
+    printf("Saisir le nom de l'étudiant à rechercher : ");
+    scanf("%s", nom_cherche);                // Lecture du nom
 
-// Fonction pour charger les étudiants depuis un fichier texte
-void chargerDepuisFichier(const char* nomFichier) {
-    FILE* f = fopen(nomFichier, "r");  // Ouvre en lecture
-    if (!f) {
-        printf("Fichier introuvable.\n");
-        return;
-    }
-
-    nbEtudiants = 0;  // Réinitialise la liste actuelle
-    while (fscanf(f, "%d %s %s %f", 
-           &liste[nbEtudiants].id, 
-           liste[nbEtudiants].nom, 
-           liste[nbEtudiants].prenom, 
-           &liste[nbEtudiants].moyenne) != EOF) {
-        nbEtudiants++;  // Incrémente pour chaque étudiant lu
-    }
-    fclose(f);
-    printf("Chargement effectué depuis %s.\n", nomFichier);
-}
-
-// Fonction de recherche par nom
-void rechercherEtudiantParNom() {
-    char recherche[50];
-    printf("Nom à rechercher : ");
-    scanf("%s", recherche);
-
-    int trouvés = 0;
-    for (int i = 0; i < nbEtudiants; i++) {
-        if (strcmp(liste[i].nom, recherche) == 0) {
-            printf("%d - %s %s - %.2f\n", 
-                   liste[i].id, liste[i].nom, 
-                   liste[i].prenom, liste[i].moyenne);
-            trouvés++;
+    int trouve = 0;                          // Booléen indicateur de succès
+    for (int i = 0; i < nb_etudiants; i++) {
+        if (strcmp(liste[i].nom, nom_cherche) == 0) { // Comparaison
+            printf("Étudiant trouvé : ID: %d, %s %s, Note: %.2f\n",
+                   liste[i].id,
+                   liste[i].nom,
+                   liste[i].prenom,
+                   liste[i].note);
+            trouve = 1;                      // Étudiant trouvé
         }
     }
 
-    if (trouvés == 0) {
-        printf("Aucun étudiant trouvé.\n");
+    if (!trouve) {                           // Aucun étudiant correspondant
+        printf("Aucun étudiant trouvé avec ce nom.\n");
     }
 }
 
-// Fonction principale avec menu
-int main() {
-    int choix;
+// ============================
+// 4. SAUVEGARDE ET CHARGEMENT
+// ============================
+
+void sauvegarde() {                          // Enregistrement des étudiants dans un fichier
+    FILE *f = fopen("etudiants.txt", "w");   // Ouverture en écriture
+    if (!f) {                                // Vérification de l'ouverture
+        printf("Erreur lors de l'ouverture du fichier.\n");
+        return;
+    }
+
+    for (int i = 0; i < nb_etudiants; i++) { // Parcours des étudiants
+        fprintf(f, "%d %s %s %.2f\n",        // Écriture dans le fichier
+                liste[i].id,
+                liste[i].nom,
+                liste[i].prenom,
+                liste[i].note);
+    }
+
+    fclose(f);                               // Fermeture du fichier
+    printf("Données sauvegardées avec succès.\n");
+}
+
+void chargement() {                          // Chargement des étudiants depuis un fichier
+    FILE *f = fopen("etudiants.txt", "r");   // Ouverture en lecture
+    if (!f) {                                // Fichier introuvable
+        printf("Erreur : fichier non trouvé.\n");
+        return;
+    }
+
+    nb_etudiants = 0;                        // Réinitialisation du compteur
+    while (fscanf(f, "%d %s %s %f",          // Lecture ligne par ligne
+                  &liste[nb_etudiants].id,
+                  liste[nb_etudiants].nom,
+                  liste[nb_etudiants].prenom,
+                  &liste[nb_etudiants].note) == 4) {
+        nb_etudiants++;                      // Incrémentation
+        if (nb_etudiants >= MAX_ETUDIANTS) break; // Limite atteinte
+    }
+
+    fclose(f);                               // Fermeture du fichier
+    printf("Chargement des données terminé.\n");
+}
+
+// ============================
+// 5. MENU ET INTÉGRATION
+// ============================
+
+int main() {                                 // Fonction principale
+    int choix;                               // Choix de l’utilisateur
+
     do {
-        printf("\n--- MENU ---\n");
-        printf("1. Ajouter un étudiant\n");
-        printf("2. Afficher les étudiants\n");
-        printf("3. Trier par moyenne\n");
-        printf("4. Sauvegarder dans un fichier\n");
-        printf("5. Charger depuis un fichier\n");
-        printf("6. Rechercher par nom\n");
+        // Affichage du menu
+        printf("\n=== MENU PRINCIPAL ===\n");
+        printf("1. Saisie d’un étudiant\n");
+        printf("2. Affichage des données\n");
+        printf("3. Filtrage par note\n");
+        printf("4. Tri des étudiants\n");
+        printf("5. Recherche par nom\n");
+        printf("6. Sauvegarde\n");
+        printf("7. Chargement\n");
         printf("0. Quitter\n");
-        printf("Choix : ");
-        scanf("%d", &choix);
-        getchar(); // consomme le \n laissé par scanf
+        printf("Votre choix : ");
+        scanf("%d", &choix);                 // Lecture du choix
 
-        // Appelle la fonction correspondant au choix
+        // Exécution selon le choix
         switch(choix) {
-            case 1: ajouterEtudiant(); break;
-            case 2: afficherEtudiants(); break;
-            case 3: trierEtudiantsParMoyenne(); break;
-            case 4: sauvegarderDansFichier("etudiants.txt"); break;
-            case 5: chargerDepuisFichier("etudiants.txt"); break;
-            case 6: rechercherEtudiantParNom(); break;
-            case 0: printf("Au revoir.\n"); break;
-            default: printf("Choix invalide.\n");
+            case 1: saisie(); break;
+            case 2: affichage(); break;
+            case 3: filtrage(); break;
+            case 4: tri(); break;
+            case 5: recherche(); break;
+            case 6: sauvegarde(); break;
+            case 7: chargement(); break;
+            case 0: printf("Au revoir !\n"); break;
+            default: printf("Choix invalide !\n");
         }
-    } while (choix != 0);  // Le menu continue tant que l'utilisateur ne choisit pas 0
 
-    return 0;
+    } while (choix != 0);                    // Boucle jusqu’à choix = 0 (quitter)
+
+    return 0;                                // Fin normale du programme
 }
